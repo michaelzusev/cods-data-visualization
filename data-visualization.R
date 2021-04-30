@@ -2,7 +2,7 @@ library(data.table)
 library(tidyverse)
 library(hrbrthemes)
 
-housing_prices_raw <- fread("../18100205.csv", encoding = "UTF-8")
+housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
 
 str(housing_prices_raw)
