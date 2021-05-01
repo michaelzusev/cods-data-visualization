@@ -4,7 +4,90 @@ library(hrbrthemes)
 library(ggthemes)
 library(jsonlite)
 
+#### Fundamentals ####
+
+# Console
+
+"Prints to Console"
+
+# Variable Assignment
+
+x <- 1
+
+y <- 3
+
+# Environment
+
+x+y
+
+# Data Types
+
+my_character <- "abcd"
+
+my_number <- 1
+
+my_integer <- 2L
+
+my_logical <- TRUE
+
+my_na <- NA
+
+class(my_character)
+
+class(my_number)
+
+class(my_integer)
+
+class(my_logical)
+
+class(my_na)
+
+# Data Structures
+
+my_vector <- c(1,5,9)
+
+my_vector[3]
+
+my_list <- list("first","second","third",1,2,3)
+
+my_list[4]
+
+my_matrix <- matrix(data=c(1,2,3,4,5,6), ncol = 3)
+
+my_matrix[3]
+
+my_matrix[1,2]
+
+my_matrix[2,3]
+
+my_dataframe <- data.frame(first_col = c(1,2,3), 
+                           second_col = c("on","sk","ab"), 
+                           third_col = c("50",44,TRUE))
+
+# Functions
+
+some_numbers <- c(1,4,2,3,5,6,7)
+
+mean(some_numbers)
+
+median(some_numbers)
+
+some_numbers_missing <- c(1,4,2,3,5,6,7,NA)
+
+mean(some_numbers_missing, na.rm = TRUE)
+
+median(some_numbers_missing, na.rm = TRUE)
+
+
+#### Importing Data ####
+
+# Quick Aside 
+
 all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
+
+
+
+
 
 housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
