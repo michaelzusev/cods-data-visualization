@@ -1,6 +1,9 @@
 library(data.table)
 library(tidyverse)
 library(hrbrthemes)
+library(jsonlite)
+
+all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
 housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
