@@ -1,6 +1,7 @@
 library(data.table)
 library(tidyverse)
 library(hrbrthemes)
+library(ggthemes)
 library(jsonlite)
 
 all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
@@ -42,7 +43,9 @@ housing_prices_canada <- housing_prices_clean %>%
 
 housing_prices_canada_plot <- ggplot(housing_prices_canada, aes(x = date, y = index)) +
   geom_line() +
-  theme_ipsum_tw()
+  theme_tufte()
+  
+  # theme_ipsum_tw()
 
 housing_prices_canada_plot
 
@@ -63,15 +66,16 @@ housing_prices_prov <- housing_prices_clean %>%
 
 
 housing_prices_prov_lines <- ggplot(housing_prices_prov, aes(x = date, y = index, color = geo)) +
-  geom_line()+
-  theme_ipsum_tw()
+  geom_line() + 
+  theme_tufte()
+  # theme_ipsum_tw()
 
 housing_prices_prov_lines
 
 housing_prices_prov_facet <- ggplot(housing_prices_prov, aes(x = date, y = index)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_ipsum_tw()
+  theme_tufte()
 
 housing_prices_prov_facet
 
@@ -92,7 +96,7 @@ housing_prices_prov_compare <- housing_prices_clean %>%
 housing_prices_prov_compare <- ggplot(housing_prices_prov_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_ipsum_tw()
+  theme_tufte()
 
 housing_prices_prov_compare
 
@@ -104,7 +108,7 @@ housing_prices_cma_compare <- housing_prices_clean %>%
 housing_prices_cma_compare <- ggplot(housing_prices_cma_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_ipsum_tw()
+  theme_hc()
 
 housing_prices_cma_compare
 
