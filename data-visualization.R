@@ -1,8 +1,10 @@
 library(data.table)
 library(tidyverse)
-library(hrbrthemes)
 library(ggthemes)
 library(jsonlite)
+library(lubridate)
+library(skimr)
+library(httr)
 
 #### Fundamentals ####
 
@@ -83,8 +85,24 @@ median(some_numbers_missing, na.rm = TRUE)
 
 # Quick Aside 
 
-all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
+# all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
+
+get_table <- function(pid,name){
+  download.file(paste0("https://www150.statcan.gc.ca/n1/tbl/csv/",pid,"-eng.zip"),
+                destfile = paste0(pid,".zip"))
+  unzip(paste0(pid,".zip"))
+  unlink(paste0(pid,".zip"))
+  unlink(paste0(pid,"_MetaData.csv"))
+  my_table <- fread(paste0(pid, ".csv"), encoding = "UTF-8")
+  assign(name, my_table, envir = .GlobalEnv)
+}
+
+get_table("23100287", "test")
+
+
+
+aircraft <- fread("23100287.csv", encoding = "UTF-8")
 
 
 
@@ -127,8 +145,6 @@ housing_prices_canada <- housing_prices_clean %>%
 housing_prices_canada_plot <- ggplot(housing_prices_canada, aes(x = date, y = index)) +
   geom_line() +
   theme_tufte()
-  
-  # theme_ipsum_tw()
 
 housing_prices_canada_plot
 
@@ -148,19 +164,18 @@ housing_prices_prov <- housing_prices_clean %>%
   filter(type == "Total (house and land)")
 
 
-housing_prices_prov_lines <- ggplot(housing_prices_prov, aes(x = date, y = index, color = geo)) +
+housing_prices_prov_lines_plot <- ggplot(housing_prices_prov, aes(x = date, y = index, color = geo)) +
   geom_line() + 
   theme_tufte()
-  # theme_ipsum_tw()
 
-housing_prices_prov_lines
+housing_prices_prov_lines_plot
 
-housing_prices_prov_facet <- ggplot(housing_prices_prov, aes(x = date, y = index)) +
+housing_prices_prov_facet_plot <- ggplot(housing_prices_prov, aes(x = date, y = index)) +
   geom_line()+
   facet_wrap(vars(geo)) +
   theme_tufte()
 
-housing_prices_prov_facet
+housing_prices_prov_facet_plot
 
 
 housing_prices_prov_compare <- housing_prices_clean %>%
@@ -176,23 +191,48 @@ housing_prices_prov_compare <- housing_prices_clean %>%
                     "British Columbia")) %>%
   filter(type != "Total (house and land)")
 
-housing_prices_prov_compare <- ggplot(housing_prices_prov_compare, aes(x = date, y = index, color = type)) +
+housing_prices_prov_compare_plot <- ggplot(housing_prices_prov_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
   facet_wrap(vars(geo)) +
   theme_tufte()
 
-housing_prices_prov_compare
+housing_prices_prov_compare_plot
 
 housing_prices_cma_compare <- housing_prices_clean %>%
   filter(str_detect(geo,",")) %>%
   filter(type != "Total (house and land)")
 
 
-housing_prices_cma_compare <- ggplot(housing_prices_cma_compare, aes(x = date, y = index, color = type)) +
+housing_prices_cma_compare_plot <- ggplot(housing_prices_cma_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_hc()
+  theme_pander()
 
-housing_prices_cma_compare
+housing_prices_cma_compare_plot
+
+housing_prices_cma_6mth <- housing_prices_cma_compare %>%
+  filter(date > (today()-months(8)))
+
+housing_prices_cma_6mth_plot <- ggplot(housing_prices_cma_6mth, aes(x = date, y = index, fill = type)) +
+  geom_col(position = "stack") + 
+  facet_wrap(vars(geo))
+
+housing_prices_cma_6mth_plot
+
+housing_prices_cma_growth <- housing_prices_cma_6mth %>%
+  group_by(geo, type) %>%
+  mutate(growth = index - lag(index)) %>%
+  ungroup %>%
+  mutate(city = word(geo, 1, sep = ","))
+
+housing_prices_cma_growth_plot <- ggplot(housing_prices_cma_growth, aes(x = date, y = growth, fill = type)) +
+  geom_col(position = "stack") +
+  facet_wrap(vars(city), as.table = FALSE) + 
+  theme_pander(base_size = 10)
+
+housing_prices_cma_growth_plot 
+
+
+  
 
 
