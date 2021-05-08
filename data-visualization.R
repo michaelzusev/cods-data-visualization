@@ -102,7 +102,7 @@ get_table("23100287", "test")
 
 
 
-aircraft <- fread("23100287.csv", encoding = "UTF-8")
+
 
 
 
@@ -126,6 +126,10 @@ for (colname in colnames(housing_prices_raw)){
 }
 
 
+skim(housing_prices_raw)
+
+
+
 housing_prices_clean <- housing_prices_raw %>%
   mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%
   select(date, GEO, `New housing price indexes`, VALUE) %>%
@@ -133,7 +137,7 @@ housing_prices_clean <- housing_prices_raw %>%
          type = `New housing price indexes`,
          index = VALUE)
   
-
+skim(housing_prices_clean)
 
 str(housing_prices_clean)
 unique(housing_prices_clean[,'geo'])
@@ -233,6 +237,39 @@ housing_prices_cma_growth_plot <- ggplot(housing_prices_cma_growth, aes(x = date
 housing_prices_cma_growth_plot 
 
 
-  
+
+aircraft <- fread("23100287.csv", encoding = "UTF-8")
+
+aircraft_clean <- aircraft %>%
+  select(REF_DATE, 
+         `Domestic and international itinerant aircraft movements`,
+         VALUE) %>%
+  rename(date = REF_DATE,
+         move_type =`Domestic and international itinerant aircraft movements`,
+         movements = VALUE) %>%
+  mutate(date = as.Date(date))
+
+skim(aircraft_clean)
+
+
+aircraft_plot <- ggplot(aircraft_clean, aes(x=date, y=movements, color=move_type)) + 
+  geom_line() +
+  theme_pander()
+
+aircraft_plot
+
+get_table("14100221", "weekly_earnings")
+
+
+skim(weekly_earnings)
+
+weekly_earnings_clean <- weekly_earnings %>%
+  select(date=as.Date(paste0(`REF_DATE`,"-01")),
+         employee_type=`Type of employee`,
+         estimate=Estimate,
+         industry=`North American Industry Classification System (NAICS)`,
+         uom=UOM,
+         value=VALUE)
+
 
 
