@@ -258,10 +258,7 @@ aircraft_plot <- ggplot(aircraft_clean, aes(x=date, y=movements, color=move_type
 
 aircraft_plot
 
-<<<<<<< HEAD
-=======
-get_table("23100009","aircraft_movements")
->>>>>>> 0446d25b231ce24e3287531c7f5eb92f1e05360c
+
 get_table("14100221", "weekly_earnings")
 
 
