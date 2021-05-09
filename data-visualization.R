@@ -6,6 +6,9 @@ library(lubridate)
 library(skimr)
 library(httr)
 library(scales)
+library(maps)
+library(devtools)
+library(mapcan)
 
 #### Fundamentals ####
 
@@ -100,13 +103,6 @@ get_table <- function(pid,name){
 }
 
 # get_table("23100287", "test")
-
-
-
-
-
-
-
 
 housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
@@ -367,6 +363,26 @@ employment_type_agg_plot <- ggplot(employment_type_agg, aes(x=employee_type, y=s
 employment_type_agg_plot
 
 
+employment_type_agg_difference <- employment_type_agg %>%
+  group_by(employee_type) %>%
+  summarize(difference = diff(sum, lag = 1)) %>%
+  ungroup
+
+employment_type_agg_difference_plot <- ggplot(employment_type_agg_difference, aes(x=employee_type, y=difference)) +
+  geom_col()
+
+employment_type_agg_difference_plot
 
 
 unique(weekly_earnings_clean[,estimate])
+
+
+m_test <- ggplot(mapcan(boundaries = provinces, type = standard), aes(long, lat, group = group, fill = pr_english))+
+  geom_polygon() +
+  coord_fixed() + 
+  theme_mapcan()
+
+m_test
+
+map_test <- mapcan(boundaries = provinces, type = standard)
+
