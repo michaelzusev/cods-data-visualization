@@ -5,6 +5,7 @@ library(jsonlite)
 library(lubridate)
 library(skimr)
 library(httr)
+library(scales)
 
 #### Fundamentals ####
 
@@ -98,7 +99,7 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
-get_table("23100287", "test")
+# get_table("23100287", "test")
 
 
 
@@ -264,13 +265,108 @@ get_table("14100221", "weekly_earnings")
 
 skim(weekly_earnings)
 
+
+
 weekly_earnings_clean <- weekly_earnings %>%
-  select(date=as.Date(paste0(`REF_DATE`,"-01")),
+  select(date=REF_DATE,
          employee_type=`Type of employee`,
          estimate=Estimate,
          industry=`North American Industry Classification System (NAICS)`,
          uom=UOM,
-         value=VALUE)
+         value=VALUE) %>%
+  mutate(date=as.Date(paste0(date,"-01")))
+
+
+skim(weekly_earnings_clean)
+
+
+employment_type <- weekly_earnings_clean %>%
+  filter(estimate == "Employment",
+         str_detect(industry, "aggregate"))
 
 
 
+
+
+employment_type_plot <- ggplot(employment_type, aes(x=date, y=value, color=employee_type))+
+  geom_line() + 
+  scale_y_continuous(labels = comma) +
+  theme_pander()
+
+employment_type_plot
+
+employment_type_year <- weekly_earnings_clean %>%
+  filter(estimate == "Employment",
+         str_detect(industry, "aggregate"),
+         date > today()-years(2))
+
+employment_type_year <- ggplot(employment_type_6mth, aes(x=date, y=value, fill=employee_type)) +
+  geom_col(position = "dodge")
+
+employment_type_year_plot
+
+employment_type_year_growth <- weekly_earnings_clean %>%
+  filter(estimate == "Employment",
+         str_detect(industry, "aggregate"),
+         date > today()-years(2)) %>% 
+  group_by(employee_type) %>%
+  mutate(growth = value - lag(value)) %>%
+  ungroup
+
+
+employment_type_year_growth_plot <- ggplot(employment_type_year_growth, aes(x=date,y=growth,fill=employee_type)) +
+  geom_col(position="dodge") +
+  theme_pander()
+
+employment_type_year_growth_plot
+
+
+employee_type_total <- weekly_earnings_clean %>%
+  filter(estimate == "Employment",
+         str_detect(industry, "aggregate"),
+         date > today()-years(2)) %>% 
+  group_by(employee_type) %>%
+  mutate(growth = value - lag(value)) %>%
+  ungroup
+
+
+
+weekly_earnings_estimate <- weekly_earnings_clean %>%
+  filter(estimate =="Average weekly earnings including overtime",
+         str_detect(industry, "aggregate"))
+
+weekly_earnings_estimate_plot <- ggplot(weekly_earnings_estimate, aes(x=date, y=value, color=employee_type))+
+  geom_line() + 
+  theme_pander()
+
+weekly_earnings_estimate_plot
+
+
+
+
+weekly_earnings_6mth <- weekly_earnings_clean %>%
+  filter(estimate =="Average weekly earnings including overtime",
+         str_detect(industry, "aggregate"),
+         date > today()-months(9))
+
+weekly_earnings_6mth_plot <- ggplot(weekly_earnings_6mth, aes(x=date, y=value, fill=employee_type))+
+  geom_col(position = "dodge") + 
+  theme_pander()
+
+weekly_earnings_6mth_plot
+
+employment_type_agg <- employment_type %>%
+  filter(date > "2020-01-01") %>%
+  mutate(period = ifelse(date < "2020-06-01", "After June 2020", "Before June 2020")) %>%
+  group_by(employee_type, period) %>%
+  summarize(sum = sum(value))
+
+employment_type_agg_plot <- ggplot(employment_type_agg, aes(x=employee_type, y=sum, fill=reorder(period, -sum))) +
+  geom_col(position="dodge")
+
+employment_type_agg_plot
+
+
+
+
+unique(weekly_earnings_clean[,estimate])
