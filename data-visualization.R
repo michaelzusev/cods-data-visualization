@@ -9,6 +9,8 @@ library(scales)
 library(maps)
 library(devtools)
 library(mapcan)
+library(gganimate)
+library(transformr)
 
 #### Fundamentals ####
 
@@ -377,12 +379,66 @@ employment_type_agg_difference_plot
 unique(weekly_earnings_clean[,estimate])
 
 
-m_test <- ggplot(mapcan(boundaries = provinces, type = standard), aes(long, lat, group = group, fill = pr_english))+
+
+
+housing_prices_map <- housing_prices_clean %>%
+  filter(geo != "Canada",
+         str_detect(geo, ",", negate = TRUE),
+         type == "Total (house and land)",
+         date > today()-months(3)) %>%
+  mutate(pr_alpha = case_when(
+    geo=="Newfoundland and Labrador" ~ "NL",
+    geo=="Prince Edward Island" ~ "PE",
+    geo=="Nova Scotia" ~ "NS",
+    geo=="New Brunswick" ~ "NB",
+    geo=="Quebec" ~ "QC",
+    geo=="Ontario" ~ "ON",
+    geo=="Manitoba" ~ "MB",
+    geo=="Saskatchewan" ~ "SK",
+    geo=="Alberta" ~ "AB",
+    geo=="British Columbia" ~ "BC"))
+
+housing_prices_map_join <- mapcan(boundaries = provinces, type = standard) %>%
+  left_join(housing_prices_map)
+
+
+housing_prices_map_plot <- ggplot(housing_prices_map_join, aes(long, lat, group = group, fill = index))+
   geom_polygon() +
   coord_fixed() + 
+  theme_mapcan() + 
+  scale_fill_gradient(low = "#D6FFFE", high ="#005250", na.value = "#d6d6d6")+
+  labs(title = "New Housing Price Index",
+       subtitle = "March 2021",
+       caption = "Statistics Canada")
+
+housing_prices_map_plot
+
+
+housing_prices_map_animate <- housing_prices_clean %>%
+  filter(geo != "Canada",
+         str_detect(geo, ",", negate = TRUE),
+         type == "Total (house and land)",
+         date >= "1990-01-01") %>%
+  mutate(pr_alpha = case_when(
+    geo=="Newfoundland and Labrador" ~ "NL",
+    geo=="Prince Edward Island" ~ "PE",
+    geo=="Nova Scotia" ~ "NS",
+    geo=="New Brunswick" ~ "NB",
+    geo=="Quebec" ~ "QC",
+    geo=="Ontario" ~ "ON",
+    geo=="Manitoba" ~ "MB",
+    geo=="Saskatchewan" ~ "SK",
+    geo=="Alberta" ~ "AB",
+    geo=="British Columbia" ~ "BC"))
+
+housing_prices_map_animate_join <- housing_prices_map_animate %>%
+  left_join(mapcan(boundaries = provinces, type = standard))
+
+housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
+  geom_polygon() +
+  coord_fixed() +
   theme_mapcan()
+  
+housing_prices_map_animate_plot
 
-m_test
-
-map_test <- mapcan(boundaries = provinces, type = standard)
 
