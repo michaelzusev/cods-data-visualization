@@ -298,7 +298,7 @@ employment_type_year <- weekly_earnings_clean %>%
          str_detect(industry, "aggregate"),
          date > today()-years(2))
 
-employment_type_year <- ggplot(employment_type_6mth, aes(x=date, y=value, fill=employee_type)) +
+employment_type_year_plot <- ggplot(employment_type_year, aes(x=date, y=value, fill=employee_type)) +
   geom_col(position = "dodge")
 
 employment_type_year_plot
@@ -437,7 +437,10 @@ housing_prices_map_animate_join <- housing_prices_map_animate %>%
 housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
   geom_polygon() +
   coord_fixed() +
-  theme_mapcan()
+  transition_manual(date) + 
+  theme_mapcan() + 
+  labs(title = "Index",
+       subtitle = '{date}')
   
 housing_prices_map_animate_plot
 
