@@ -439,7 +439,7 @@ housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(l
   coord_fixed() +
   transition_manual(date, len) + 
   theme_mapcan() +
-  ggtitle('Index',
+  ggtitle('New Housing Price Index',
           subtitle ="{current_frame}")
 
 # + 
