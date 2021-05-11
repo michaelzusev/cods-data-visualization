@@ -437,11 +437,15 @@ housing_prices_map_animate_join <- housing_prices_map_animate %>%
 housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
   geom_polygon() +
   coord_fixed() +
-  transition_manual(date) + 
-  theme_mapcan() + 
-  labs(title = "Index",
-       subtitle = '{date}')
-  
-housing_prices_map_animate_plot
+  transition_manual(date, len) + 
+  theme_mapcan() +
+  ggtitle('Index',
+          subtitle ="{current_frame}")
 
+# + 
+#   labs(title = "Index",
+#        subtitle = '{date}')
+
+
+animate(housing_prices_map_animate_plot, fps = 2)
 
