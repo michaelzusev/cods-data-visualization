@@ -1,24 +1,87 @@
-library(data.table)
-library(tidyverse)
-library(ggthemes)
-library(jsonlite)
-library(lubridate)
-library(skimr)
-library(httr)
-library(scales)
-library(maps)
-library(devtools)
-library(mapcan)
-library(gganimate)
-library(transformr)
+# Package libraries, organized by importance.
+# Essential
+library(tidyverse) # Used for majority of this tutorial -- https://www.tidyverse.org/packages/#core-tidyverse
+library(data.table) # Used to read csv files -- https://rdatatable.gitlab.io/data.table/
+
+# Essential Utilities
+library(skimr) # Quick way to read summary statistics about a dataset -- https://docs.ropensci.org/skimr/
+library(lubridate) # Work with dates and times in R -- https://lubridate.tidyverse.org/index.html
+library(scales) # Scale helper for ggplot -- https://scales.r-lib.org/
+
+# Theme
+library(ggthemes) # Themes for ggplot -- https://jrnold.github.io/ggthemes/
+
+# Required to retrieve All Cube Data from StatsCan
+library(jsonlite) # Read JSON -- https://cran.r-project.org/web/packages/jsonlite/vignettes/json-aaquickstart.html
+library(httr) # Curl Wrapper for R (modern Web API) -- https://httr.r-lib.org/
+
+# Required for Maps
+library(mapcan) # Maps for Canada -- https://github.com/mccormackandrew/mapcan
+library(transformr) # Necessary for mapcan 
+
+# Required for Animation
+library(gganimate) # Animate ggplot -- https://gganimate.com/articles/gganimate.html
+library(gifski) # Necessary for making gifs from gganimate
+
+#Other
+library(devtools) # Helper
+
+
+# Installing Packages
+
+# install.package("Package Name")
+
+
+
+
+
+#### Examples #### 
+#' Source this File before running the plots below
+
+#' Disclaimer: No guarantees these plots represent what is actually going on. 
+#' Not too much effort on my part was done to make sure these make sense. 
+
+
+housing_prices_canada_plot # Basic Line Plots
+
+housing_prices_prov_lines_plot # Multiple Line Plots
+
+employment_type_agg_difference_plot # Simple Column Plots
+
+employment_type_year_growth_plot # Multiple Column Plots
+
+housing_prices_cma_compare_plot # Facet Line Plots
+
+housing_prices_cma_growth_plot # Facet Column Plots
+
+housing_prices_map_plot # Maps
+
+animate(housing_prices_map_animate_plot, fps = 2) # Animations
+
+
+# Check more out here: https://www.r-graph-gallery.com/
+
+
+
+
 
 #### Fundamentals ####
 
+#' Use the # (hash/pound) to comment out lines of code. Multiple hashes can be used
+#' for setting up script headings and a hash apostrophe for multiple lines.  
+
 # Console 
+#' The R Console is where R as a language "lives", but typically, we don't use
+#' console for writing R code, rather we use scripts to "print to the console", 
+#' outputting only elements of the scripts we are interested in. 
 
 "Prints to Console"
 
 # Variable Assignment
+
+#' You can assign values to a variable with the <- (assignment) operator. 
+#' Technically, you can do it with the = (equals) operations, but goes against 
+#' R convention
 
 x <- 1
 
@@ -26,9 +89,22 @@ y <- 3
 
 # Environment
 
+
+#' Variables that are assigned a value are automatically mounted onto the Global 
+#' R environment. You can see all the variables on the right side of the screen in
+#' the environment tab. All variables are uniquely named, so if you reassign a variable
+#' a different value, then it will override the previous value. 
+
+x+y
+
+x <- 2
+
 x+y
 
 # Data Types
+
+#' There are only a few primitive data types to keep in mind in R. Each value must
+#' be at least on class of data type. 
 
 my_character <- "abcd"
 
@@ -39,6 +115,9 @@ my_integer <- 2L
 my_logical <- TRUE
 
 my_na <- NA
+
+#' We can check what the class of a variable is by using the class function, which
+#' will print the class in the console. 
 
 class(my_character)
 
@@ -52,21 +131,40 @@ class(my_na)
 
 # Data Structures
 
+#' Data structures are ways of organizing data in a particular variable.
+
+#' Vectors are multiple values of an identical data type. my_vector is a vector
+#' of numeric variables. The c() function creates combinations of variables. 
+
 my_vector <- c(1,5,9)
 
 my_vector[3]
 
+#' You can access a particular variable in a vector with its index. Indexes in R
+#' start at 1
+
 my_list <- list("first","second","third",1,2,3)
+
+#' Lists are combinations of variables that can have any variable types. my_list
+#' has both characters and numbers
 
 my_list[4]
 
 my_matrix <- matrix(data=c(1,2,3,4,5,6), ncol = 3)
 
+#' Matrices are 2-dimensional data structure that have identical data types. 
+
 my_matrix[3]
+
+#' You can access a particular matrix variable by either its index number.
 
 my_matrix[1,2]
 
+#' Or by referencing the row and column index. 
+
 my_matrix[2,3]
+
+#' A dataframe is a 2 dimensional 
 
 my_dataframe <- data.frame(first_col = c(1,2,3), 
                            second_col = c("on","sk","ab"), 
@@ -87,6 +185,22 @@ mean(some_numbers_missing, na.rm = TRUE)
 median(some_numbers_missing, na.rm = TRUE)
 
 
+# Pipes
+
+my_first_variable <- 3
+
+my_second_variable <- my_first_variable + 6
+
+my_third_variable <- sqrt(my_second_variable)
+
+my_third_variable
+
+
+pipe_variable <- my_first_variable %>% + 6 %>% sqrt()
+
+pipe_variable
+
+
 #### Importing Data ####
 
 # Quick Aside 
@@ -104,10 +218,11 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
-# get_table("23100287", "test")
 
 housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
+
+# Return the structure of a dataset
 
 str(housing_prices_raw)
 
@@ -119,13 +234,13 @@ unique(housing_prices_raw[,'UOM'])
 unique(housing_prices_raw[,'STATUS'])
 unique(housing_prices_raw[,'DECIMALS'])
 
-
-for (colname in colnames(housing_prices_raw)){
-  print(unique(housing_prices_raw[,..colname]))
-}
-
+# A much better way to look inside a dataset, using the skimr package
 
 skim(housing_prices_raw)
+
+
+
+
 
 
 
@@ -437,7 +552,7 @@ housing_prices_map_animate_join <- housing_prices_map_animate %>%
 housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
   geom_polygon() +
   coord_fixed() +
-  transition_manual(date, len) + 
+  transition_manual(date) + 
   theme_mapcan() +
   ggtitle('Index',
           subtitle ="{current_frame}")
