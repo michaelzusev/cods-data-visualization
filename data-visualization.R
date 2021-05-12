@@ -218,8 +218,8 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
-
-housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
+get_table("18100205", "housing_prices_raw")
+# housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
 
 # Return the structure of a dataset
@@ -240,10 +240,6 @@ skim(housing_prices_raw)
 
 
 
-
-
-
-
 housing_prices_clean <- housing_prices_raw %>%
   mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%
   select(date, GEO, `New housing price indexes`, VALUE) %>%
@@ -253,7 +249,7 @@ housing_prices_clean <- housing_prices_raw %>%
   
 skim(housing_prices_clean)
 
-str(housing_prices_clean)
+
 unique(housing_prices_clean[,'geo'])
 
 housing_prices_canada <- housing_prices_clean %>%
@@ -262,7 +258,12 @@ housing_prices_canada <- housing_prices_clean %>%
 
 housing_prices_canada_plot <- ggplot(housing_prices_canada, aes(x = date, y = index)) +
   geom_line() +
-  theme_tufte()
+  theme_pander() + 
+  labs(title = "New Housing Price Index", 
+       subtitle = "Canada",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205")
 
 housing_prices_canada_plot
 
@@ -284,14 +285,65 @@ housing_prices_prov <- housing_prices_clean %>%
 
 housing_prices_prov_lines_plot <- ggplot(housing_prices_prov, aes(x = date, y = index, color = geo)) +
   geom_line() + 
-  theme_tufte()
+  theme_pander() + 
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205",
+       color = "Province")
 
 housing_prices_prov_lines_plot
+
+housing_prices_prov_last_month <- housing_prices_prov %>%
+  filter(date > "2021-02-01")
+
+housing_prices_prov_col_plot <- ggplot(housing_prices_prov_last_month, aes(x = index, y = reorder(geo,index))) +
+  geom_col() + 
+  theme_pander() + 
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces",
+       x = "Index",
+       y = "Province",
+       caption = "Statistics Canada PID-18100205")
+
+housing_prices_prov_col_plot
+
+housing_prices_prov_last_month_compare <- housing_prices_clean %>%
+  filter(geo %in% c("Prince Edward Island",
+                    "Newfoundland and Labrador",
+                    "Nova Scotia",
+                    "New Brunswick",
+                    "Quebec",
+                    "Ontario",
+                    "Manitoba",
+                    "Alberta",
+                    "Saskatchewan",
+                    "British Columbia")) %>%
+  filter(type != "Total (house and land)",
+         date > "2021-02-01")
+
+housing_prices_prov_last_month_compare_plot <- ggplot(housing_prices_prov_last_month_compare, aes(x = index, y = reorder(geo,index), fill = type)) +
+  geom_col(position = "dodge") + 
+  theme_pander() + 
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces March 2021",
+       x = "Index",
+       y = "Province",
+       caption = "Statistics Canada PID-18100205",
+       fill = "Index Type")
+
+housing_prices_prov_last_month_compare_plot
 
 housing_prices_prov_facet_plot <- ggplot(housing_prices_prov, aes(x = date, y = index)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_tufte()
+  theme_pander()+
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205")
 
 housing_prices_prov_facet_plot
 
@@ -311,8 +363,14 @@ housing_prices_prov_compare <- housing_prices_clean %>%
 
 housing_prices_prov_compare_plot <- ggplot(housing_prices_prov_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
-  facet_wrap(vars(geo)) +
-  theme_tufte()
+  facet_wrap(vars(geo), as.table = FALSE) +
+  theme_pander() +
+  labs(title = "New Housing Price Index", 
+       subtitle = "Province",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205",
+       color = "Index Type")
 
 housing_prices_prov_compare_plot
 
@@ -324,16 +382,30 @@ housing_prices_cma_compare <- housing_prices_clean %>%
 housing_prices_cma_compare_plot <- ggplot(housing_prices_cma_compare, aes(x = date, y = index, color = type)) +
   geom_line()+
   facet_wrap(vars(geo)) +
-  theme_pander()
+  theme_pander() +
+  labs(title = "New Housing Price Index", 
+       subtitle = "Census Metro Areas",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205",
+       color = "Index Type")
 
 housing_prices_cma_compare_plot
 
 housing_prices_cma_6mth <- housing_prices_cma_compare %>%
-  filter(date > (today()-months(8)))
+  filter(date > (today()-months(8))) %>%
+  mutate(city = word(geo, 1, sep = ","))
 
 housing_prices_cma_6mth_plot <- ggplot(housing_prices_cma_6mth, aes(x = date, y = index, fill = type)) +
   geom_col(position = "stack") + 
-  facet_wrap(vars(geo))
+  facet_wrap(vars(city), as.table = FALSE) + 
+  theme_pander() +
+  labs(title = "New Housing Price Index", 
+       subtitle = "Census Metro Areas, Last 6 Months",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205",
+       color = "Index Type")
 
 housing_prices_cma_6mth_plot
 
@@ -350,11 +422,11 @@ housing_prices_cma_growth_plot <- ggplot(housing_prices_cma_growth, aes(x = date
 
 housing_prices_cma_growth_plot 
 
+get_table("23100287", "aircraft_raw")
 
+skim(aircraft_raw)
 
-aircraft <- fread("23100287.csv", encoding = "UTF-8")
-
-aircraft_clean <- aircraft %>%
+aircraft_clean <- aircraft_raw %>%
   select(REF_DATE, 
          `Domestic and international itinerant aircraft movements`,
          VALUE) %>%
@@ -368,19 +440,24 @@ skim(aircraft_clean)
 
 aircraft_plot <- ggplot(aircraft_clean, aes(x=date, y=movements, color=move_type)) + 
   geom_line() +
-  theme_pander()
+  theme_pander() + 
+  labs(title = "Aircraft Movements", 
+       x = "Date",
+       y = "Number of Movements",
+       color = "Movement Type",
+       caption = "Statistics Canada PID-23100287")
 
 aircraft_plot
 
 
-get_table("14100221", "weekly_earnings")
+get_table("14100221", "weekly_earnings_raw")
 
 
-skim(weekly_earnings)
+skim(weekly_earnings_raw)
 
 
 
-weekly_earnings_clean <- weekly_earnings %>%
+weekly_earnings_clean <- weekly_earnings_raw %>%
   select(date=REF_DATE,
          employee_type=`Type of employee`,
          estimate=Estimate,
