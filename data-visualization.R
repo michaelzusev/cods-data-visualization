@@ -203,6 +203,8 @@ pipe_variable
 
 #### Importing Data ####
 
+# How to find Statistics Canada Data 
+
 # Quick Aside 
 
 # all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
@@ -231,7 +233,6 @@ str(housing_prices_raw)
 
 unique(housing_prices_raw[,'New housing price indexes'])
 unique(housing_prices_raw[,'UOM'])
-unique(housing_prices_raw[,'STATUS'])
 unique(housing_prices_raw[,'DECIMALS'])
 
 # A much better way to look inside a dataset, using the skimr package
@@ -246,6 +247,7 @@ housing_prices_clean <- housing_prices_raw %>%
   rename(geo = GEO,
          type = `New housing price indexes`,
          index = VALUE)
+
   
 skim(housing_prices_clean)
 
