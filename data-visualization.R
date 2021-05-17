@@ -77,11 +77,16 @@ animate(housing_prices_map_animate_plot, fps = 2) # Animations
 
 "Prints to Console"
 
+
+
+
 # Variable Assignment
 
 #' You can assign values to a variable with the <- (assignment) operator. 
 #' Technically, you can do it with the = (equals) operations, but goes against 
 #' R convention
+
+#' Building up our knowledge to get to something called a data frame, 
 
 x <- 1
 
@@ -114,7 +119,7 @@ my_integer <- 2L
 
 my_logical <- TRUE
 
-my_na <- NA
+my_na <- NA # What is NA?
 
 #' We can check what the class of a variable is by using the class function, which
 #' will print the class in the console. 
@@ -158,7 +163,7 @@ my_matrix[3]
 
 #' You can access a particular matrix variable by either its index number.
 
-my_matrix[1,2]
+my_matrix[2,3]
 
 #' Or by referencing the row and column index. 
 
@@ -179,6 +184,8 @@ mean(some_numbers)
 median(some_numbers)
 
 some_numbers_missing <- c(1,4,2,3,5,6,7,NA)
+
+mean(some_numbers_missing)
 
 mean(some_numbers_missing, na.rm = TRUE)
 
@@ -221,7 +228,10 @@ get_table <- function(pid,name){
 }
 
 get_table("18100205", "housing_prices_raw")
-# housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
+
+
+
+housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
 
 # Return the structure of a dataset
