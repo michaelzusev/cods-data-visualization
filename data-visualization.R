@@ -216,7 +216,9 @@ pipe_variable
 
 # all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
-
+#' get_table function for easily downloading any tables from the all_cubes list,
+#' Simply put in the product ID for the table, and the name of your choice for the
+#' environment variable and it will download, unzip, and load the table into your environment
 get_table <- function(pid,name){
   download.file(paste0("https://www150.statcan.gc.ca/n1/tbl/csv/",pid,"-eng.zip"),
                 destfile = paste0(pid,".zip"))
@@ -227,7 +229,8 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
-get_table("18100205", "housing_prices_raw")
+
+# get_table("18100205", "housing_prices_raw")
 
 
 
@@ -430,7 +433,13 @@ housing_prices_cma_growth <- housing_prices_cma_6mth %>%
 housing_prices_cma_growth_plot <- ggplot(housing_prices_cma_growth, aes(x = date, y = growth, fill = type)) +
   geom_col(position = "stack") +
   facet_wrap(vars(city), as.table = FALSE) + 
-  theme_pander(base_size = 10)
+  theme_pander(base_size = 10) + 
+  labs (title = "Census Metropolitan Area Index Growth",
+        subtitle = "Last 6 months",
+        x = "Date",
+        y = "Index Growth",
+        fill = "Type",
+        caption = "Statistics Canada PID-18100205")
 
 housing_prices_cma_growth_plot 
 
@@ -518,7 +527,14 @@ employment_type_year_growth <- weekly_earnings_clean %>%
 
 employment_type_year_growth_plot <- ggplot(employment_type_year_growth, aes(x=date,y=growth,fill=employee_type)) +
   geom_col(position="dodge") +
-  theme_pander()
+  theme_pander() +
+  labs(title = "Employee Growth",
+       subtitle = "By Type",
+       x = "Date",
+       y = "Growth",
+       fill = "Employee Type",
+       caption = "Statistics Canada PID-14100221") +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))
 
 employment_type_year_growth_plot
 
@@ -575,7 +591,14 @@ employment_type_agg_difference <- employment_type_agg %>%
   ungroup
 
 employment_type_agg_difference_plot <- ggplot(employment_type_agg_difference, aes(x=employee_type, y=difference)) +
-  geom_col()
+  geom_col() + 
+  theme_pander() +
+  labs(title = "Employee Type Aggregate Difference",
+       subtitle = "Before and After June 2020",
+       x = "Employee Type",
+       y = "Difference in Persons",
+       caption = "Statistics Canada PID-14100221") +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))
 
 employment_type_agg_difference_plot
 
