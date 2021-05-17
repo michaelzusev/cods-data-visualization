@@ -209,7 +209,9 @@ pipe_variable
 
 # all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
-
+#' get_table function for easily downloading any tables from the all_cubes list,
+#' Simply put in the product ID for the table, and the name of your choice for the
+#' environment variable and it will download, unzip, and load the table into your environment
 get_table <- function(pid,name){
   download.file(paste0("https://www150.statcan.gc.ca/n1/tbl/csv/",pid,"-eng.zip"),
                 destfile = paste0(pid,".zip"))
@@ -220,8 +222,10 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
-get_table("18100205", "housing_prices_raw")
-# housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
+# get_table("18100205", "housing_prices_raw")
+
+
+housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
 
 # Return the structure of a dataset
