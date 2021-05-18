@@ -534,7 +534,7 @@ employment_type_year_growth_plot <- ggplot(employment_type_year_growth, aes(x=da
        y = "Growth",
        fill = "Employee Type",
        caption = "Statistics Canada PID-14100221") +
-  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))
+  scale_y_continuous(labels = label_number(suffix = "M", scale = 1e-6))
 
 employment_type_year_growth_plot
 
@@ -598,7 +598,7 @@ employment_type_agg_difference_plot <- ggplot(employment_type_agg_difference, ae
        x = "Employee Type",
        y = "Difference in Persons",
        caption = "Statistics Canada PID-14100221") +
-  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))
+  scale_y_continuous(labels = label_number(suffix = "M", scale = 1e-6))
 
 employment_type_agg_difference_plot
 
