@@ -1,80 +1,8 @@
-# Package libraries, organized by importance.
-# Essential
-library(tidyverse) # Used for majority of this tutorial -- https://www.tidyverse.org/packages/#core-tidyverse
-library(data.table) # Used to read csv files -- https://rdatatable.gitlab.io/data.table/
-
-# Essential Utilities
-library(skimr) # Quick way to read summary statistics about a dataset -- https://docs.ropensci.org/skimr/
-library(lubridate) # Work with dates and times in R -- https://lubridate.tidyverse.org/index.html
-library(scales) # Scale helper for ggplot -- https://scales.r-lib.org/
-
-# Theme
-library(ggthemes) # Themes for ggplot -- https://jrnold.github.io/ggthemes/
-
-# Required to retrieve All Cube Data from StatsCan
-library(jsonlite) # Read JSON -- https://cran.r-project.org/web/packages/jsonlite/vignettes/json-aaquickstart.html
-library(httr) # Curl Wrapper for R (modern Web API) -- https://httr.r-lib.org/
-
-# Required for Maps
-library(mapcan) # Maps for Canada -- https://github.com/mccormackandrew/mapcan
-library(transformr) # Necessary for mapcan 
-
-# Required for Animation
-library(gganimate) # Animate ggplot -- https://gganimate.com/articles/gganimate.html
-library(gifski) # Necessary for making gifs from gganimate
-
-#Other
-library(devtools) # Helper
-
-
-# Installing Packages
-
-# install.package("Package Name")
-
-
-
-
-
-#### Examples #### 
-#' Source this File before running the plots below
-
-#' Disclaimer: No guarantees these plots represent what is actually going on. 
-#' Not too much effort on my part was done to make sure these make sense. 
-
-
-housing_prices_canada_plot # Basic Line Plots
-
-housing_prices_prov_lines_plot # Multiple Line Plots
-
-employment_type_agg_difference_plot # Simple Column Plots
-
-employment_type_year_growth_plot # Multiple Column Plots
-
-housing_prices_cma_compare_plot # Facet Line Plots
-
-housing_prices_cma_growth_plot # Facet Column Plots
-
-housing_prices_map_plot # Maps
-
-animate(housing_prices_map_animate_plot, fps = 2) # Animations
-
-
-ggsave('housing_prices_canada_plot.png', 
-       plot = housing_prices_canada_plot,
-       device = 'png',
-       height = 6,
-       width = 12)
-
-
-# Check more out here: https://www.r-graph-gallery.com/
-
-
-
-
 #### Fundamentals ####
 
-#' Use the # (hash/pound) to comment out lines of code. Multiple hashes can be used
-#' for setting up script headings and a hash apostrophe for multiple lines.  
+#' Use the # (hash/pound) to comment out (disable) lines of code. 
+#' Multiple hashes can be used for setting up script headings 
+#' and a hash apostrophe for multiple lines.  
 
 # Console 
 #' The R Console is where R as a language "lives", but typically, we don't use
@@ -200,6 +128,12 @@ median(some_numbers_missing, na.rm = TRUE)
 
 # Pipes
 
+#' Pipes are used to simplify code that takes a series of steps. Instead of using
+#' multiple intermediate objects, you can pipe functions together.
+
+
+# Without Pipes: 
+
 my_first_variable <- 3
 
 my_second_variable <- my_first_variable + 6
@@ -208,21 +142,84 @@ my_third_variable <- sqrt(my_second_variable)
 
 my_third_variable
 
+# With Pipes:
+
+#' First, I take the variable I want to start with, then I pipe into Step 1: Add 6,
+#' Then, I pipe that into the Square Root function. 
+
+#' my_third_variable and pipe_variable are exactly the same, but the pipe variable
+#' did not need an intermediate variable. 
 
 pipe_variable <- my_first_variable %>% + 6 %>% sqrt()
 
 pipe_variable
 
 
+# Packages 
+
+
+#' Installing Packages
+#' To install packages run the following function: 
+
+# install.package("Package Name")
+
+#' Once installed onto your system, you need to load packages into your R
+#' session. You can do so by using the library function
+
+# library(packagename)
+
+
+# Here are the packages we will be using for this demonstration: 
+
+
+
+# Package libraries, organized by importance.
+# Essential
+library(tidyverse) # Used for majority of this tutorial -- https://www.tidyverse.org/packages/#core-tidyverse
+library(data.table) # Used to read csv files -- https://rdatatable.gitlab.io/data.table/
+
+# Essential Utilities
+library(skimr) # Quick way to read summary statistics about a dataset -- https://docs.ropensci.org/skimr/
+library(lubridate) # Work with dates and times in R -- https://lubridate.tidyverse.org/index.html
+library(scales) # Scale helper for ggplot -- https://scales.r-lib.org/
+
+# Theme
+library(ggthemes) # Themes for ggplot -- https://jrnold.github.io/ggthemes/
+
+# Required to retrieve All Cube Data from StatsCan
+library(jsonlite) # Read JSON -- https://cran.r-project.org/web/packages/jsonlite/vignettes/json-aaquickstart.html
+library(httr) # Curl Wrapper for R (modern Web API) -- https://httr.r-lib.org/
+
+# Required for Maps
+library(mapcan) # Maps for Canada -- https://github.com/mccormackandrew/mapcan
+library(transformr) # Necessary for mapcan 
+
+# Required for Animation
+library(gganimate) # Animate ggplot -- https://gganimate.com/articles/gganimate.html
+library(gifski) # Necessary for making gifs from gganimate
+
+#Other
+library(devtools) # Helper
+
+
+
+
+
+
+
+
+
+
 #### Importing Data ####
 
-# How to find Statistics Canada Data 
+#' Every table in Statistics Canada is referred to as a "Cube". 
+#' You can look at all the cubes by running the below line of code that
+#' retrieves a list from the Statscan Web API
 
-# Quick Aside 
 
 # all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
-#' get_table function for easily downloading any tables from the all_cubes list,
+#' I've created this get_table function for easily downloading any tables from the all_cubes list,
 #' Simply put in the product ID for the table, and the name of your choice for the
 #' environment variable and it will download, unzip, and load the table into your environment
 get_table <- function(pid,name){
@@ -235,6 +232,7 @@ get_table <- function(pid,name){
   assign(name, my_table, envir = .GlobalEnv)
 }
 
+# You can use the function like so: 
 
 # get_table("18100205", "housing_prices_raw")
 
@@ -243,12 +241,12 @@ get_table <- function(pid,name){
 housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
 
 
-# Return the structure of a dataset
+# Return the structure of a dataset using the structure function
 
 str(housing_prices_raw)
 
 
-
+# Quick aside: you can return unique column values by the square bracket notation
 
 unique(housing_prices_raw[,'New housing price indexes'])
 unique(housing_prices_raw[,'UOM'])
@@ -261,8 +259,8 @@ skim(housing_prices_raw)
 
 
 housing_prices_clean <- housing_prices_raw %>%
-  mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%
-  select(date, GEO, `New housing price indexes`, VALUE) %>%
+  mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%       
+  select(date, GEO, `New housing price indexes`, VALUE) %>% 
   rename(geo = GEO,
          type = `New housing price indexes`,
          index = VALUE)
@@ -502,6 +500,80 @@ housing_prices_cma_growth_plot <- ggplot(housing_prices_cma_growth, aes(x = date
 
 housing_prices_cma_growth_plot 
 
+
+
+housing_prices_map <- housing_prices_clean %>%
+  filter(geo != "Canada",
+         str_detect(geo, ",", negate = TRUE),
+         type == "Total (house and land)",
+         date > today()-months(3)) %>%
+  mutate(pr_alpha = case_when(
+    geo=="Newfoundland and Labrador" ~ "NL",
+    geo=="Prince Edward Island" ~ "PE",
+    geo=="Nova Scotia" ~ "NS",
+    geo=="New Brunswick" ~ "NB",
+    geo=="Quebec" ~ "QC",
+    geo=="Ontario" ~ "ON",
+    geo=="Manitoba" ~ "MB",
+    geo=="Saskatchewan" ~ "SK",
+    geo=="Alberta" ~ "AB",
+    geo=="British Columbia" ~ "BC"))
+
+housing_prices_map_join <- mapcan(boundaries = provinces, type = standard) %>%
+  left_join(housing_prices_map)
+
+
+housing_prices_map_plot <- ggplot(housing_prices_map_join, aes(long, lat, group = group, fill = index))+
+  geom_polygon() +
+  coord_fixed() + 
+  theme_mapcan() + 
+  scale_fill_gradient(low = "#D6FFFE", high ="#005250", na.value = "#d6d6d6")+
+  labs(title = "New Housing Price Index",
+       subtitle = "March 2021",
+       caption = "Statistics Canada")
+
+housing_prices_map_plot
+
+
+housing_prices_map_animate <- housing_prices_clean %>%
+  filter(geo != "Canada",
+         str_detect(geo, ",", negate = TRUE),
+         type == "Total (house and land)",
+         date >= "1990-01-01") %>%
+  mutate(pr_alpha = case_when(
+    geo=="Newfoundland and Labrador" ~ "NL",
+    geo=="Prince Edward Island" ~ "PE",
+    geo=="Nova Scotia" ~ "NS",
+    geo=="New Brunswick" ~ "NB",
+    geo=="Quebec" ~ "QC",
+    geo=="Ontario" ~ "ON",
+    geo=="Manitoba" ~ "MB",
+    geo=="Saskatchewan" ~ "SK",
+    geo=="Alberta" ~ "AB",
+    geo=="British Columbia" ~ "BC"))
+
+housing_prices_map_animate_join <- housing_prices_map_animate %>%
+  left_join(mapcan(boundaries = provinces, type = standard))
+
+housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
+  geom_polygon() +
+  coord_fixed() +
+  transition_manual(date) + 
+  theme_mapcan() +
+  ggtitle('New Housing Price Index',
+          subtitle ="{current_frame}")
+
+
+animate(housing_prices_map_animate_plot, fps = 2)
+
+
+
+
+
+# Analysis of the Aircraft Dataset
+
+
+
 get_table("23100287", "aircraft_raw")
 
 skim(aircraft_raw)
@@ -529,6 +601,9 @@ aircraft_plot <- ggplot(aircraft_clean, aes(x=date, y=movements, color=move_type
 
 aircraft_plot
 
+
+
+# Analysis of the Weekly Earnings Dataset
 
 get_table("14100221", "weekly_earnings_raw")
 
@@ -663,75 +738,4 @@ employment_type_agg_difference_plot
 
 
 unique(weekly_earnings_clean[,estimate])
-
-
-
-
-housing_prices_map <- housing_prices_clean %>%
-  filter(geo != "Canada",
-         str_detect(geo, ",", negate = TRUE),
-         type == "Total (house and land)",
-         date > today()-months(3)) %>%
-  mutate(pr_alpha = case_when(
-    geo=="Newfoundland and Labrador" ~ "NL",
-    geo=="Prince Edward Island" ~ "PE",
-    geo=="Nova Scotia" ~ "NS",
-    geo=="New Brunswick" ~ "NB",
-    geo=="Quebec" ~ "QC",
-    geo=="Ontario" ~ "ON",
-    geo=="Manitoba" ~ "MB",
-    geo=="Saskatchewan" ~ "SK",
-    geo=="Alberta" ~ "AB",
-    geo=="British Columbia" ~ "BC"))
-
-housing_prices_map_join <- mapcan(boundaries = provinces, type = standard) %>%
-  left_join(housing_prices_map)
-
-
-housing_prices_map_plot <- ggplot(housing_prices_map_join, aes(long, lat, group = group, fill = index))+
-  geom_polygon() +
-  coord_fixed() + 
-  theme_mapcan() + 
-  scale_fill_gradient(low = "#D6FFFE", high ="#005250", na.value = "#d6d6d6")+
-  labs(title = "New Housing Price Index",
-       subtitle = "March 2021",
-       caption = "Statistics Canada")
-
-housing_prices_map_plot
-
-
-housing_prices_map_animate <- housing_prices_clean %>%
-  filter(geo != "Canada",
-         str_detect(geo, ",", negate = TRUE),
-         type == "Total (house and land)",
-         date >= "1990-01-01") %>%
-  mutate(pr_alpha = case_when(
-    geo=="Newfoundland and Labrador" ~ "NL",
-    geo=="Prince Edward Island" ~ "PE",
-    geo=="Nova Scotia" ~ "NS",
-    geo=="New Brunswick" ~ "NB",
-    geo=="Quebec" ~ "QC",
-    geo=="Ontario" ~ "ON",
-    geo=="Manitoba" ~ "MB",
-    geo=="Saskatchewan" ~ "SK",
-    geo=="Alberta" ~ "AB",
-    geo=="British Columbia" ~ "BC"))
-
-housing_prices_map_animate_join <- housing_prices_map_animate %>%
-  left_join(mapcan(boundaries = provinces, type = standard))
-
-housing_prices_map_animate_plot <- ggplot(housing_prices_map_animate_join, aes(long, lat, group = group, fill = index))+
-  geom_polygon() +
-  coord_fixed() +
-  transition_manual(date) + 
-  theme_mapcan() +
-  ggtitle('New Housing Price Index',
-          subtitle ="{current_frame}")
-
-# + 
-#   labs(title = "Index",
-#        subtitle = '{date}')
-
-
-animate(housing_prices_map_animate_plot, fps = 2)
 
