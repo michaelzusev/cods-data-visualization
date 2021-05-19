@@ -59,8 +59,14 @@ housing_prices_map_plot # Maps
 animate(housing_prices_map_animate_plot, fps = 2) # Animations
 
 
-# Check more out here: https://www.r-graph-gallery.com/
+ggsave('housing_prices_canada_plot.png', 
+       plot = housing_prices_canada_plot,
+       device = 'png',
+       height = 6,
+       width = 12)
 
+
+# Check more out here: https://www.r-graph-gallery.com/
 
 
 
@@ -311,13 +317,13 @@ housing_prices_prov_lines_plot <- ggplot(housing_prices_prov, aes(x = date, y = 
 housing_prices_prov_lines_plot
 
 housing_prices_prov_last_month <- housing_prices_prov %>%
-  filter(date > "2021-02-01")
+  filter(date == "2021-03-01")
 
 housing_prices_prov_col_plot <- ggplot(housing_prices_prov_last_month, aes(x = index, y = reorder(geo,index))) +
   geom_col() + 
   theme_pander() + 
   labs(title = "New Housing Price Index", 
-       subtitle = "Provinces",
+       subtitle = "March 2021",
        x = "Index",
        y = "Province",
        caption = "Statistics Canada PID-18100205")
@@ -361,6 +367,59 @@ housing_prices_prov_facet_plot <- ggplot(housing_prices_prov, aes(x = date, y = 
        caption = "Statistics Canada PID-18100205")
 
 housing_prices_prov_facet_plot
+
+housing_prices_prov_6mth <- housing_prices_prov %>%
+  filter(date > today()-years(1))
+
+housing_prices_prov_6mth_plot <- ggplot(housing_prices_prov_6mth, aes(x = date, y = index)) +
+  geom_col()+
+  facet_wrap(vars(geo), as.table = FALSE) +
+  theme_pander()+
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205")
+
+housing_prices_prov_6mth_plot
+
+
+housing_prices_prov_6mth_line_plot <- ggplot(housing_prices_prov_6mth, aes(x = date, y = index, color = geo)) +
+  geom_line(size=2)+
+  theme_pander()+
+  labs(title = "New Housing Price Index", 
+       subtitle = "Provinces",
+       x = "Date",
+       y = "Index",
+       caption = "Statistics Canada PID-18100205")
+
+housing_prices_prov_6mth_line_plot
+
+
+
+housing_prices_prov_6mth_growth <- housing_prices_prov %>%
+  group_by(geo,type) %>%
+  mutate(growth = index-lag(index)) %>%
+  ungroup %>%
+  filter(date > today()-years(1))
+
+
+
+housing_prices_prov_6mth_growth_plot <- ggplot(housing_prices_prov_6mth_growth, aes(x = date, y = growth)) +
+  geom_col()+
+  facet_wrap(vars(geo), as.table = FALSE) +
+  theme_pander()+
+  labs(title = "New Housing Price Index Growth", 
+       subtitle = "Provinces",
+       x = "Date",
+       y = "Growth",
+       caption = "Statistics Canada PID-18100205")
+
+
+
+housing_prices_prov_6mth_growth_plot
+
+
 
 
 housing_prices_prov_compare <- housing_prices_clean %>%
