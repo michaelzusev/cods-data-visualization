@@ -53,7 +53,7 @@ my_integer <- 2L
 
 my_logical <- TRUE
 
-my_na <- NA # What is NA?
+my_na <- NA # NA is a null or missing value
 
 #' We can check what the class of a variable is by using the class function, which
 #' will print the class in the console. 
