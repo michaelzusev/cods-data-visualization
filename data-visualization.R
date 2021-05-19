@@ -43,7 +43,7 @@ x+y
 # Data Types
 
 #' There are only a few primitive data types to keep in mind in R. Each value must
-#' be at least on class of data type. 
+#' be at least one class of data type. 
 
 my_character <- "abcd"
 
@@ -103,7 +103,7 @@ my_matrix[2,3]
 
 my_matrix[2,3]
 
-#' A dataframe is a 2 dimensional 
+#' A dataframe is a 2 dimensional data structure
 
 my_dataframe <- data.frame(first_col = c(1,2,3), 
                            second_col = c("on","sk","ab"), 
@@ -220,7 +220,7 @@ library(devtools) # Helper
 all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
 #' I've created this get_table function for easily downloading any tables from the all_cubes list,
-#' Simply put in the product ID for the table, and the name of your choice for the
+#' Simply put in the product ID (pid) for the table, and the name of your choice for the
 #' environment variable and it will download, unzip, and load the table into your environment
 get_table <- function(pid,name){
   download.file(paste0("https://www150.statcan.gc.ca/n1/tbl/csv/",pid,"-eng.zip"),
@@ -234,32 +234,32 @@ get_table <- function(pid,name){
 
 # You can use the function like so: 
 
-# get_table("18100205", "housing_prices_raw")
+# get_table("18100205", "housing_prices_base")
 
 
 
-housing_prices_raw <- fread("18100205.csv", encoding = "UTF-8")
+housing_prices_base <- fread("18100205.csv", encoding = "UTF-8")
 
 
 # Return the structure of a dataset using the structure function
 
-str(housing_prices_raw)
+str(housing_prices_base)
 
 
 # Quick aside: you can return unique column values by the square bracket notation
 
-unique(housing_prices_raw[,'New housing price indexes'])
-unique(housing_prices_raw[,'UOM'])
-unique(housing_prices_raw[,'DECIMALS'])
+unique(housing_prices_base[,'New housing price indexes'])
+unique(housing_prices_base[,'UOM'])
+unique(housing_prices_base[,'DECIMALS'])
 
 # A much better way to look inside a dataset, using the skimr package
 
-skim(housing_prices_raw)
+skim(housing_prices_base)
 
 
 
 
-housing_prices_clean <- housing_prices_raw %>%
+housing_prices_clean <- housing_prices_base %>%
   mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%       
   select(date, GEO, `New housing price indexes`, VALUE) %>% 
   rename(geo = GEO,
@@ -575,11 +575,11 @@ animate(housing_prices_map_animate_plot, fps = 2)
 
 
 
-get_table("23100287", "aircraft_raw")
+get_table("23100287", "aircraft_base")
 
-skim(aircraft_raw)
+skim(aircraft_base)
 
-aircraft_clean <- aircraft_raw %>%
+aircraft_clean <- aircraft_base %>%
   select(REF_DATE, 
          `Domestic and international itinerant aircraft movements`,
          VALUE) %>%
@@ -606,14 +606,14 @@ aircraft_plot
 
 # Analysis of the Weekly Earnings Dataset
 
-get_table("14100221", "weekly_earnings_raw")
+get_table("14100221", "weekly_earnings_base")
 
 
-skim(weekly_earnings_raw)
+skim(weekly_earnings_base)
 
 
 
-weekly_earnings_clean <- weekly_earnings_raw %>%
+weekly_earnings_clean <- weekly_earnings_base %>%
   select(date=REF_DATE,
          employee_type=`Type of employee`,
          estimate=Estimate,
