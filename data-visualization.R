@@ -24,7 +24,7 @@ library(gganimate) # Animate ggplot -- https://gganimate.com/articles/gganimate.
 library(gifski) # Necessary for making gifs from gganimate
 
 #Other
-library(devtools) # Helper
+library(devtools) # Helper for other packages
 
 
 # Installing Packages
@@ -56,7 +56,7 @@ housing_prices_cma_growth_plot # Facet Column Plots
 
 housing_prices_map_plot # Maps
 
-animate(housing_prices_map_animate_plot, fps = 2) # Animations
+animate(housing_prices_map_animate_plot, fps = 3) # Animations
 
 
 # Check more out here: https://www.r-graph-gallery.com/
@@ -207,7 +207,7 @@ pipe_variable
 
 # Quick Aside 
 
-# all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
+all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
 #' get_table function for easily downloading any tables from the all_cubes list,
 #' Simply put in the product ID for the table, and the name of your choice for the
@@ -245,7 +245,7 @@ skim(housing_prices_raw)
 
 
 
-housing_prices_clean <- housing_prices_raw %>%
+housing_prices_clean <- housing_prices_base %>%
   mutate(date = as.Date(paste0(REF_DATE, "-01"))) %>%
   select(date, GEO, `New housing price indexes`, VALUE) %>%
   rename(geo = GEO,
