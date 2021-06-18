@@ -217,7 +217,7 @@ library(devtools) # Helper
 #' retrieves a list from the Statscan Web API
 
 
-all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
+# all_cubes <- stream_in(file("https://www150.statcan.gc.ca/t1/wds/rest/getAllCubesList"))
 
 #' I've created this get_table function for easily downloading any tables from the all_cubes list,
 #' Simply put in the product ID (pid) for the table, and the name of your choice for the
